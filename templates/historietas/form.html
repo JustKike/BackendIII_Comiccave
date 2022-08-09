@@ -1,0 +1,53 @@
+<form enctype="multipart/form-data" method="post">
+  <!-- token de identificacion -->
+  {% csrf_token %}
+  <!-- datos que vienen de la vista -->
+  {% for campo in formulario %}
+
+  <div class="mb-3">
+    <label for="" class="form-label">{{ campo.label }}</label>
+    <!-- si es tipo file -->
+    {% if campo.field.widget.input_type == 'file' and campo.value %}
+    <br>
+    <img src="{{MEDIA_URL}}/imagenes/{{campo.value}}" width="100" alt="Imagen Comic">
+    {% endif %}
+
+    {% if campo.label == 'User' %}
+    <select class="form-select" aria-label="Default select example" name="{{ campo.name }}">
+      <option value="{{ request.user.id }}">{{ request.user }}</option>
+    </select>
+   
+    {% else %}
+    
+    {% if campo.label == 'Categoria' and campo.value %}
+    <!-- <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="{{ campo.label }}" value="{{ campo.value }}"> -->
+    
+    <select class="form-select" aria-label="Default select example" name="{{ campo.name }}">
+      <option selected>{{ campo.label }}</option>
+      {% for campo in categorias %}
+      <option value="{{campo.id}}">{{campo}}</option>
+      {% endfor %}
+    </select>
+      {% else %}
+    
+    <input
+      type="{{ campo.field.widget.input_type }}"
+      class="form-control mt-2"
+      name="{{ campo.name }}"
+      id=""
+      placeholder="{{ campo.label }}"
+      value="{{ campo.value | default:'' }}"
+    />
+
+    {% endif %}
+    {% endif %}
+  </div>
+  <!-- imprimir errores -->
+  <div class="col-12 help-text">
+    {{ campo.errors }}
+  </div>
+  {% endfor %}
+  <!-- boton de envio -->
+  <input name="" id="" class="btn btn-success" type="submit" value="Enviar informacion">
+  <a name="" id="" class="btn btn-primary" href="{% url 'historietas' %}" role="button">Cancelar</a>
+</form>

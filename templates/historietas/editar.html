@@ -1,0 +1,27 @@
+<!-- para hacer uso de la base html -->
+{% extends "base.html" %}
+<!-- enviar el titulo a la base -->
+{% block titulo %} Editar Comic {% endblock %}
+<!-- enviar el contenido a la base -->
+{% block contenido %}
+<style>
+.sombra{
+box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+</style>
+<div class="card sombra mb-3">
+    <div class="card-header">
+        Editar informacion del comic
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Datos del comic</h4>
+        
+        {% include 'historietas/form.html' %}
+
+    </div>
+    <div class="card-footer text-muted">
+        The ComicCave
+    </div>
+</div>
+
+{% endblock %}

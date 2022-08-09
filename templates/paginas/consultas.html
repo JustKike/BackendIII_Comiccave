@@ -1,0 +1,90 @@
+<!-- para hacer uso de la base html -->
+{% extends "base.html" %}
+<!-- enviar el titulo a la base -->
+{% block titulo %} Consultas {% endblock %}
+<!-- enviar el contenido a la base -->
+{% block contenido %}
+
+<style type="text/css">
+    #contend{
+        overflow-x: scroll;
+    }
+    #parrafo{
+        width: 300px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .sombra{
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+    section{
+			width:400px;
+		}
+		section p:last-child{
+			overflow:hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+        section p:hover {
+            width: 100%;
+            white-space: initial;
+            overflow:visible;
+            text-align: justify;
+            cursor: pointer;
+            }
+</style>
+
+<!-- Catalogo de historietas -->
+<div class=" p-5 bg-warning mt-3 rounded container">
+
+    <div class="class row">
+        <div class="col-md-12 search">
+            <form method="get">
+                <div id="custom-search-input">
+                    <div class="input-group col-md-12">
+                        <input type="text" class="form-control" placeholder="Buscar..." name="Buscar" value="{{ request.GET.Buscar }}">
+                        <span class="input-group-list">
+                            <i class="icon icon-search"></i>
+                            <button type="submit" class="btn btn-success">Buscar</button>
+                        </span>
+                    </div>
+                </div>
+            </form>
+            <form method="get">
+                <div id="custom-search-input">
+                    <div class="form-group">
+                        <label for=""><strong>Fecha de creacion:</strong></label>
+                        <div class="input-group col-md-12">
+                          <select class="form-select" aria-label="Default select example" name="Filtrar">
+                            <option selected value="">
+                                {% if request.GET.Filtrar %}
+                                <!-- {{ request.GET.Filtrar }} -->
+                                    {% for opc in historietas %} 
+                                        {{ opc.updated_at }}
+                                    {% endfor %}
+                                {% else %}
+                                Seleccionar fecha
+                                {% endif %}
+                            </option>
+                            {% for opcion in historietas %}
+                            <option value="{{opcion.id}}">{{opcion.updated_at}}</option>
+                            {% endfor %}
+                          </select>
+                          <button type="submit" class="btn btn-success">Filtrar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<div class=" p-5 bg-light mt-3 rounded">
+       
+        {% include 'historietas/consulta_comic.html' %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,82 @@
+<!-- para hacer uso de la base html -->
+{% extends "base.html" %}
+<!-- enviar el titulo a la base -->
+{% block titulo %} Lista de Usuarios {% endblock %}
+<!-- enviar el contenido a la base -->
+{% block contenido %}
+
+<style type="text/css">
+#contend{
+    overflow-x: scroll;
+}
+#parrafo{
+    width: 230px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.sombra{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+</style>
+
+<div class="card mb-2 border-dark sombra">
+    <div class="card-header bg-dark">
+        <a name="" id="" class="btn btn-success" href="{% url 'crearUsuario' %}" role="button">Agregar Nuevo Usuario</a>
+    </div>
+    <div class="card-body bg-light" id="contend">
+        <h4 class="card-title">Usuarios</h4>
+        {% if usuarios %}
+        <table class="table table-responsive table-borderless table-hover bg-white">
+            <thead align="center">
+                <tr class="bg-warning">
+                    <th>ID</th>
+                    <th>Nombre Usuario</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody align="center">
+                {% for user in usuarios %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>
+                            <p id="parrafo">
+                                {{ user.username }}
+                            </p>
+                        </td>
+                        <td>
+                            {{ user.first_name }}
+                        </td>
+                        <td>
+                            <p id="parrafo">
+                                {{ user.last_name }}
+                            </p>
+                        </td>
+                        <td>
+                            <p id="parrafo">
+                                {{ user.email }}
+                            </p>
+                        </td>
+                        <td>
+                            <a name="" id="" class="btn btn-info" href="{% url 'editarUsuario' user.id %}" role="button">Editar</a>
+                            | 
+                            <a name="" id="" class="btn btn-danger" href="{% url 'eliminarUsuario' user.id %}" role="button">Eliminar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <h1 class="text-center">No  hay registros aun.</h1>
+        {% endif %}
+        
+    </div>
+    <div class="card-footer text-white bg-dark">
+        The ComicCave
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "bootstrap-icons": "^1.9.1",
+    "serve": "^14.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}

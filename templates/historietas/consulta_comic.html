@@ -1,0 +1,57 @@
+{% for historieta in historietas %}
+<div class="mb-3 container">
+  <div class="card sombra w-75 container-fluid" >
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img
+          class="img-fluid rounded-start"
+          id="img"
+          src="{{ historieta.imagen.url }}"
+          alt="Card image cap"
+        />
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <div class="p-5 bg-light mt-3">
+                <strong style="margin-right: 5px">Titulo:</strong>
+              <h4 class="card-title" style="color: rgb(124, 7, 7);">{{ historieta.titulo }}</h4>
+                <div class="row">
+                    <p style="text-align: left">
+                    <strong style="margin-right: 5px">Subido por:</strong>
+                    {% if usuarios %} 
+                        {% for user in usuarios %} 
+                            {% if user.id == historieta.user_id %} 
+                            {{ user.username }} 
+                            {% endif %} 
+                        {% endfor %}
+                    {% endif %}
+                    </p>
+                    <p class="card-text" id="parrafo">
+                        <strong style="margin-right: 5px">Categoria:</strong>
+                        {% if usuarios %} 
+                        {% for categoria in categorias %} 
+                            {% if categoria.id == historieta.categoria_id %} 
+                            {{ categoria.descripcion }} 
+                            {% endif %} 
+                        {% endfor %}
+                    {% endif %}
+                      </p>
+                    <section>
+                        <p class="card-text">
+                          <strong style="margin-right: 5px">Descripcion:</strong>
+                          {{ historieta.descripcion }}
+                        </p>
+                    </section>
+                    <p class="card-text">
+                      <strong style="margin-right: 5px">Agregado el dia:</strong>
+                      {{ historieta.updated_at }}
+                    </p>
+
+                </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}

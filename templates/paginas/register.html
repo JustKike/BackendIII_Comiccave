@@ -1,0 +1,66 @@
+<!-- para hacer uso de la base html -->
+{% extends "base.html" %}
+<!-- enviar el titulo a la base -->
+{% block titulo %} Registrar {% endblock %}
+<!-- enviar el contenido a la base -->
+{% block contenido %}
+
+<style type="text/css">
+  body {
+    background-color: rgb(7, 7, 7);
+  }
+  #contend {
+    overflow-x: scroll;
+  }
+  #parrafo {
+    width: 230px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .sombra {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  }
+  .centrado {
+    text-align: center;
+  }
+  h3 {
+    margin: 40px 0 0;
+  }
+  h5 {
+    font-family: "lust-display-didone", serif;
+    text-align: center;
+    font-weight: bold;
+    font-size: 50px;
+    width: 100%;
+    letter-spacing: 0.5rem;
+    color: rgb(105, 10, 3);
+    text-shadow: 2px 5px 8px #030000;
+  }
+  p {
+    font-family: Century Schoolbook, Century Schoolbook L, Georgia, serif;
+    font-size: 20px;
+    color: rgb(10, 10, 10);
+    font-weight: 100;
+    text-shadow: 2px 5px 8px #030000;
+  }
+</style>
+<div class="card w-50 mx-auto border-primary">
+  <!--bg-dark text-white -->
+  <div class="card-header bg-info">
+    <h5 class="card-title">THE COMICCAVE</h5>
+  </div>
+  <div class="card-body">
+    <form class="row p-5" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+      <button type="submit" id="submit" class="btn btn-primary">
+        Registrarse
+      </button>
+      <a name="" id="" class="btn btn-danger mt-3" href="{% url 'login' %}" role="button">Cancelar</a>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

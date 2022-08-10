@@ -1,12 +1,10 @@
 from django.urls import path
 from . import views
-
 # importamos el archivo de configuracion de django
 from django.conf import settings
 # importamos la ruta estatica que se requiere
 from django.contrib.staticfiles.urls import static
-# from comics.views import GestionUsuarios
-# from django.views.generic import TemplateView
+from comics.views import UserToken
 
 
 urlpatterns = [
@@ -25,10 +23,10 @@ urlpatterns = [
     path('eliminar/<int:id>',views.eliminar, name='eliminar'),
     path('historietas/editar/<int:id>',views.editar, name='editar'),
     path('usuarios',views.usuarios, name='usuarios'),
-    # path('usuarios',TemplateView.as_view(template_name='usuarios')),
     path('usuarios/crearUsuario',views.crearUsuario, name='crearUsuario'),
     path('eliminarUsuario/<int:id>',views.eliminarUsuario, name='eliminarUsuario'),
     path('usuarios/editarUsuario/<int:id>',views.editarUsuario, name='editarUsuario'),
+    path('refresh-token/',UserToken.as_view, name='refresh-token'),
 
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

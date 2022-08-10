@@ -76,6 +76,32 @@
                     </div>
                 </div>
             </form>
+            <form method="get">
+                <div id="custom-search-input">
+                    <div class="form-group">
+                        <label for=""><strong>Categorias:</strong></label>
+                        <div class="input-group col-md-12">
+                          <select class="form-select" aria-label="Default select example" name="Category">
+                            <option selected value="">
+                                {% if request.GET.Category %}
+                                    {% for opcion in categorias %}
+                                        {% if opcion.id == request.GET.Category %}
+                                        {{ opcion.descripcion }}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                Seleccionar una categoria
+                                {% endif %}
+                            </option>
+                            {% for opcion in categorias %}
+                            <option value="{{opcion.id}}">{{opcion.descripcion}}</option>
+                            {% endfor %}
+                          </select>
+                          <button type="submit" class="btn btn-success">Filtrar categoria</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 

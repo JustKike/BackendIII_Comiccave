@@ -25,4 +25,5 @@ from django.contrib.staticfiles.urls import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('comics.urls')),
+    path('', include("Perfil.urls")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

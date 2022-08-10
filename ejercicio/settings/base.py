@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'Perfil'
 ]
 
+TOKEN_EXPIRED_AFTER_SECONDS = 60 #60 segundos, lo normal son 15min = (900s)
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

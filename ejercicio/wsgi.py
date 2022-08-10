@@ -11,7 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ejercicio.settings.production.dev')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ejercicio.settings.local')
 
 application = get_wsgi_application()
 

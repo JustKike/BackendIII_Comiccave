@@ -18,6 +18,21 @@
 .sombra{
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
+section{
+			width:260px;
+		}
+		section p:last-child{
+			overflow:hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+        section p:hover {
+            width: 100%;
+            white-space: initial;
+            overflow:visible;
+            text-align: justify;
+            cursor: pointer;
+            }
 </style>
 
 <div class="card mb-2 border-dark sombra">
@@ -41,17 +56,21 @@
                 <tr>
                     <td>{{ historieta.id }}</td>
                     <td>
-                        <p id="parrafo">
-                        {{ historieta.titulo }}
-                        </p>
+                        <section>
+                            <p>
+                            {{ historieta.titulo }}
+                            </p>
+                        </section>
                     </td>
                     <td>
                         <img src="{{ historieta.imagen.url }}" height="100" alt="Imagen Comic">
                     </td>
                     <td>
-                        <p id="parrafo">
-                            {{ historieta.descripcion }}
-                        </p>
+                        <section>
+                            <p>
+                                {{ historieta.descripcion }}
+                            </p>
+                        </section>
                     </td>
                     <td>
                         <a name="" id="" class="btn btn-info" href="{% url 'editar' historieta.id %}" role="button">Editar</a>

@@ -12,35 +12,37 @@
     <img src="{{MEDIA_URL}}/imagenes/{{campo.value}}" width="100" alt="Imagen Comic">
     {% endif %}
 
-    {% if campo.label == 'User' %}
-    <select class="form-select" aria-label="Default select example" name="{{ campo.name }}">
-      <option value="{{ request.user.id }}">{{ request.user }}</option>
-    </select>
-   
-    {% else %}
+      {% if campo.label == 'User' %}
+      <select class="form-select" aria-label="Default select example" name="{{ campo.name }}">
+        <option value="{{ request.user.id }}">{{ request.user }}</option>
+      </select>
     
-    {% if campo.label == 'Categoria' and campo.value %}
-    <!-- <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="{{ campo.label }}" value="{{ campo.value }}"> -->
-    
-    <select class="form-select" aria-label="Default select example" name="{{ campo.name }}">
-      <option selected>{{ campo.label }}</option>
-      {% for campo in categorias %}
-      <option value="{{campo.id}}">{{campo}}</option>
-      {% endfor %}
-    </select>
       {% else %}
-    
-    <input
-      type="{{ campo.field.widget.input_type }}"
-      class="form-control mt-2"
-      name="{{ campo.name }}"
-      id=""
-      placeholder="{{ campo.label }}"
-      value="{{ campo.value | default:'' }}"
-    />
-
-    {% endif %}
-    {% endif %}
+      
+        {% if campo.label == 'Categoria' and campo.value %}
+        <!-- <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="{{ campo.label }}" value="{{ campo.value }}"> -->
+        
+        <select class="form-select" aria-label="Default select example" name="{{ campo.name }}">
+          <option selected>{{ campo.label }}</option>
+            {% for campo in categorias %}
+            <option value="{{campo.id}}">{{campo}}</option>
+            {% endfor %}
+        </select>
+        {% else %}
+          {% if campo.label == 'Descripcion' %}
+            <textarea class="form-control" name="{{ campo.name }}" id="" rows="3" value="{{ campo.value | default:'' }}"></textarea>
+          {% else %}
+          <input
+            type="{{ campo.field.widget.input_type }}"
+            class="form-control mt-2"
+            name="{{ campo.name }}"
+            id=""
+            placeholder="{{ campo.label }}"
+            value="{{ campo.value | default:'' }}"
+          />
+          {% endif %}
+        {% endif %}
+      {% endif %}
   </div>
   <!-- imprimir errores -->
   <div class="col-12 help-text">

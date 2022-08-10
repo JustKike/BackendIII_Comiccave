@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.db import models
 from rest_framework.authtoken.views import Token
+
+from comics import authentication
 from .serializers import UserTokenSerializer
 from .forms import UserRegisterForm
 from django.contrib.auth import authenticate, login as auth_login, logout
@@ -10,10 +12,26 @@ from django.contrib.messages import constants as messages
 from django.contrib import messages
 from django.contrib.sessions.models import Session
 from .models import Comic, Categoria
+from Perfil.models import Profile
 from .forms import ComicForm,UserForm
 from datetime import datetime
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.authtoken.views import ObtainAuthToken
 from django.views import View
+from comics.authentication_mixins import Autentication
 from .mixins import LoginYSuperUsuarioMixin
+
+class UserToken(APIView):
+    def get(self, request, *args, **kwargs):
+        username = request.GET.get('username')
+        try:
+            user_token = Token.objects.get(
+                user = UserTokenSerializer().Meta.model.objects.filter(username = username).first()
+                )
+            messages.info(request,{'token': user_token.key})
+        except:
+            messages.error(request,{'error': 'Credenciales incorrectas'})
 
 
 """ Inicia gestion de Login/logout """
@@ -37,6 +55,7 @@ def login(request):
                             'user': user_serializer.data,
                             },'Inicio de sesion exitoso.')
                     else:
+                        # manejo de sesiones
                         all_sessions = Session.objects.filter(expire_date__gte = datetime.now())
                         if all_sessions.exists():
                             for session in all_sessions:
@@ -54,7 +73,7 @@ def login(request):
                 
                 return redirect('inicio')
             else:
-                messages.info(request, 'Nombre de usuario o contraseña incorrectos')
+                messages.error(request, 'Nombre de usuario o contraseña incorrectos')
             
         return render(request, 'paginas/login.html')
 
@@ -91,13 +110,25 @@ def register (request):
 #Gestion de usuarios
 @login_required
 def usuarios(request):
-    if request.user.is_staff:
-        # Guardamos la informacion del modelo
-        usuarios = User.objects.filter(is_superuser=False,is_active = True)
-        # enviamos los datos a la vista mediante la variable historietas
-        return render(request, 'usuarios/listar_usuario.html', {'usuarios': usuarios})
-    else:
-        return redirect('inicio')
+    try:
+        token =  Token.objects.get(user=request.user)
+        if request.user.is_staff:
+            # Guardamos la informacion del modelo
+            usuarios = User.objects.filter(is_superuser=False,is_active = True)
+            # enviamos los datos a la vista mediante la variable historietas
+            return render(request, 'usuarios/listar_usuario.html', {'usuarios': usuarios})
+        else:
+            return redirect('inicio')
+    except:
+        # manejo de sesiones
+        all_sessions = Session.objects.filter(expire_date__gte = datetime.now())
+        if all_sessions.exists():
+            for session in all_sessions:
+                session_data = session.get_decoded()
+                if str(request.user.id) == session_data.get('_auth_user_id'):
+                    session.delete()
+            messages.error(request,{'error': 'NO EXISTE EL TOKEN'})
+        return redirect('login')
 
 # Agregar o crear un usuario
 @login_required
@@ -140,13 +171,25 @@ def editarUsuario(request, id):
 # Acceder al index de historietas
 @login_required
 def historietas(request):
-    if request.user.is_staff:
-        # Guardamos la informacion del modelo
-        historietas = Comic.objects.all()
-        # enviamos los datos a la vista mediante la variable historietas
-        return render(request, 'historietas/index.html', {'historietas': historietas})
-    else:
-        return redirect('inicio')
+    try:
+        token =  Token.objects.get(user=request.user)
+        if request.user.is_staff:
+            # Guardamos la informacion del modelo
+            historietas = Comic.objects.all()
+            # enviamos los datos a la vista mediante la variable historietas
+            return render(request, 'historietas/index.html', {'historietas': historietas})
+        else:
+            return redirect('inicio')
+    except:
+        # manejo de sesiones
+        all_sessions = Session.objects.filter(expire_date__gte = datetime.now())
+        if all_sessions.exists():
+            for session in all_sessions:
+                session_data = session.get_decoded()
+                if str(request.user.id) == session_data.get('_auth_user_id'):
+                    session.delete()
+            messages.error(request,{'error': 'NO EXISTE EL TOKEN'})
+        return redirect('login')
 
 # Agregar o crear un comic
 @login_required
@@ -188,43 +231,109 @@ def eliminar(request, id):
 def inicio(request):
     # Guardamos la informacion del modelo
     historietas = Comic.objects.all()
+    try:
+        token =  Token.objects.get(user=request.user)
+    except:
+        # manejo de sesiones
+        all_sessions = Session.objects.filter(expire_date__gte = datetime.now())
+        if all_sessions.exists():
+            for session in all_sessions:
+                session_data = session.get_decoded()
+                if str(request.user.id) == session_data.get('_auth_user_id'):
+                    session.delete()
+            messages.error(request,{'error': 'NO EXISTE EL TOKEN'})
+        return redirect('login')
     return render(request, 'paginas/inicio.html', {'historietas': historietas})
 
 # Acceder a la pagina nosotros
 @login_required
 def nosotros(request):
+    try:
+        token =  Token.objects.get(user=request.user)
+    except:
+        # manejo de sesiones
+        all_sessions = Session.objects.filter(expire_date__gte = datetime.now())
+        if all_sessions.exists():
+            for session in all_sessions:
+                session_data = session.get_decoded()
+                if str(request.user.id) == session_data.get('_auth_user_id'):
+                    session.delete()
+            messages.error(request,{'error': 'NO EXISTE EL TOKEN'})
+        return redirect('login')
     return render(request, 'paginas/nosotros.html')
 
 # Acceder a la pagina consultas
 @login_required
 def consultas(request):
+    opcion = Autentication()
+    # token = request.user.auth_token.exists()
     queryset = request.GET.get('Buscar')
     querysetDate = request.GET.get('Filtrar')
+    queryCateg = request.GET.get('Category')
     historietas = Comic.objects.order_by_titulo().all()
     usuarios = User.objects.all()
     categorias = Categoria.objects.all()
-    if queryset:
-        historietas = (Comic.objects.get_by_titulo(queryset) |
-        Comic.objects.get_by_descripcion(queryset)).distinct()
-    else:
-        if querysetDate:
-            datos = Comic.objects.get(id=querysetDate)
-            date = datos.updated_at
-            historietas = Comic.objects.get_by_dateUpdated(date)
+    try:
+        token =  Token.objects.get(user=request.user)
+        if queryset:
+            historietas = (Comic.objects.get_by_titulo(queryset) |
+            Comic.objects.get_by_descripcion(queryset)).distinct()
+        else:
+            if querysetDate:
+                datos = Comic.objects.get(id=querysetDate)
+                date = datos.updated_at
+                historietas = Comic.objects.get_by_dateUpdated(date)
+            else:
+                if queryCateg:
+                    historietas = Comic.objects.filter(categoria_id=queryCateg)
+    except:
+        # manejo de sesiones
+        all_sessions = Session.objects.filter(expire_date__gte = datetime.now())
+        if all_sessions.exists():
+            for session in all_sessions:
+                session_data = session.get_decoded()
+                if str(request.user.id) == session_data.get('_auth_user_id'):
+                    session.delete()
+            messages.error(request,{'error': 'NO EXISTE EL TOKEN'})
+        return redirect('login')
     return render(request, 'paginas/consultas.html',
     {
         'historietas': historietas,
         'usuarios': usuarios,
-        'categorias': categorias
+        'categorias': categorias,
+        'opcion': opcion
     })
 
+# @login_required
+# def perfil_view(request):
+#      # Guardamos la informacion del modelo
+#     Profile = Profile.objects.all()
+#     profle2 = Profile.insert({
 
-# class GestionUsuarios(LoginYSuperUsuarioMixin,View):
-#     model = User
+#     })
+#     try:
+#         token =  Token.objects.get(user=request.user)
+#     except:
+#         # manejo de sesiones
+#         all_sessions = Session.objects.filter(expire_date__gte = datetime.now())
+#         if all_sessions.exists():
+#             for session in all_sessions:
+#                 session_data = session.get_decoded()
+#                 if str(request.user.id) == session_data.get('_auth_user_id'):
+#                     session.delete()
+#             messages.error(request,{'error': 'NO EXISTE EL TOKEN'})
+#         return redirect('login')
+#     return render(request, 'paginas/profile_usuario.html', {'Profile': Profile})
 
-#     def get_queryset(request):
-#         # Guardamos la informacion del modelo
-#         usuarios = User.objects.filter(is_superuser=False,is_active = True)
-#         # enviamos los datos a la vista mediante la variable historietas
-#         return render(request, 'usuarios/listar_usuario.html', {'usuarios': usuarios})
-        
+# try:
+#         token =  Token.objects.get(user=request.user)
+# except:
+#     # manejo de sesiones
+#     all_sessions = Session.objects.filter(expire_date__gte = datetime.now())
+#     if all_sessions.exists():
+#         for session in all_sessions:
+#             session_data = session.get_decoded()
+#             if str(request.user.id) == session_data.get('_auth_user_id'):
+#                 session.delete()
+#         messages.error(request,{'error': 'NO EXISTE EL TOKEN'})
+#     return redirect('login')

@@ -1,0 +1,118 @@
+<!-- para hacer uso de la base html -->
+{% extends "base.html" %}
+<!-- enviar el titulo a la base -->
+{% block titulo %} Perfil de Usuario {% endblock %}
+<!-- enviar el contenido a la base -->
+{% block contenido %}
+
+<style type="text/css">
+    body{
+        background-color:black;
+    }
+    #contend {
+      overflow-x: scroll;
+    }
+    #parrafo {
+      width: 230px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .sombra {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+    .sombra2{
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+    .centrado {
+      text-align: center;
+    }
+    h3 {
+      margin: 40px 0 0;
+    }
+    h5 {
+      font-family: "lust-display-didone", serif;
+      text-align: center;
+      font-weight: bold;
+      font-size: 50px;
+      width: 100%;
+      letter-spacing: 0.5rem;
+      color: rgb(105, 10, 3);
+      text-shadow: 2px 5px 8px #030000;
+    }
+    p {
+      font-family: Century Schoolbook, Century Schoolbook L, Georgia, serif;
+      font-size: 20px;
+      color: rgb(12, 12, 12);
+      font-weight: 100;
+      text-shadow: 2px 5px 8px #030000;
+    }
+    img {
+    width: 40%;
+    object-fit: cover;
+    margin: auto;
+    }
+    .uno {
+    width: 100%;
+    height: 600px;
+    }
+    .center {
+    position: absolute;
+    margin-top: 1%;
+    /* margin-left: 3%; */
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    padding: 5px;
+    border:6px solid rgb(254, 252, 252);
+    box-shadow: 0 0 2px 1px rgba(19, 19, 19, 0.5);
+    }
+    .card-body{
+        padding: 100px;
+        height: 390px;
+    }
+    .footer{
+        padding: 50px; 
+    }
+
+</style>
+
+    {% for prof in perfil %}
+    <div class="card p-5 bg-light mb-4">
+        <div class="container">
+            <div class="card mb-3 sombra2">
+            <img src="{{ prof.portada_perfil.url }}" class="card-img-top uno" alt="Portada img">
+                <div class="card-body bg-dark white-text text-center">
+                    <img src="{{ prof.avatar.url }}" class="rounded-circle center sombra" alt="Portada img">
+                </div>
+                <div class="footer bg-dark white-text rounded-bottom">
+                    <div class="bg-light text-bg-dark p-5 rounded-5">
+                        <h5 class="text-center">{{prof.user | upper}}</h5>
+                        <p>
+                        <strong style="margin-right: 5px; color: rgb(31, 3, 91); font-weight: 100px;">
+                            Nombre de Usuario:</strong>
+                            {{ request.user.first_name }}
+                        </p>
+                        <p>
+                            <strong style="margin-right: 5px; color: rgb(31, 3, 91);">Nombre:</strong>
+                            {{ request.user.last_name }}
+                        </p>
+                        <p>
+                            <strong style="margin-right: 5px; color: rgb(31, 3, 91);">Email:</strong>
+                            {{ request.user.email }}
+
+                        </p>
+                        <p>
+                            <strong style="margin-right: 5px; color: rgb(31, 3, 91);">Primer inicio de sesion:</strong>
+                            {{ request.user.date_joined }}
+
+                        </p>
+                        <p>{{ prof.bio }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+
+{% endblock %}

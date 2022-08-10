@@ -21,7 +21,7 @@ class Categoria(Base):
         return self.descripcion
 
 
-# Consultas con el manager
+# Consultas con el manager 
 class ComicManager(models.Manager):
 # 1 objtener por titulo
     def get_by_titulo(self, titulo):

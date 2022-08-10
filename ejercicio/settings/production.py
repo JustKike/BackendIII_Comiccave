@@ -1,9 +1,9 @@
 from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*','127.0.0.1']
+ALLOWED_HOSTS = ['*','ec2-3-225-110-188.compute-1.amazonaws.com']
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

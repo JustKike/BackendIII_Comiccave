@@ -118,6 +118,7 @@ def usuarios(request):
             # enviamos los datos a la vista mediante la variable historietas
             return render(request, 'usuarios/listar_usuario.html', {'usuarios': usuarios})
         else:
+            messages.error(request,{'GESTION DE USUARIOS': 'NO TIENES PERMISO PARA ACCEDER'})
             return redirect('inicio')
     except:
         # manejo de sesiones
@@ -148,9 +149,16 @@ def crearUsuario(request):
 # eliminar un usuario
 @login_required
 def eliminarUsuario(request, id):
-    usuario = User.objects.get(id=id)
-    usuario.delete()
-    return redirect('usuarios')
+    permiso = request.user.get_all_permissions()
+    print(permiso)
+    if 'auth.delete_user' in permiso:
+        usuario = User.objects.get(id=id)
+        usuario.delete()
+        messages.error(request,{'USUARIO BORRADO'})
+        return redirect('usuarios')
+    else:
+        messages.error(request,{'error': 'NO TIENES PERMISO PARA ELIMINAR USUARIOS'})
+        return redirect('usuarios')
 
 # Editar Usuario
 @login_required
@@ -179,6 +187,7 @@ def historietas(request):
             # enviamos los datos a la vista mediante la variable historietas
             return render(request, 'historietas/index.html', {'historietas': historietas})
         else:
+            messages.error(request,{'GESTION DE HISTORIETAS': 'NO TIENES PERMISO PARA ACCEDER'})
             return redirect('inicio')
     except:
         # manejo de sesiones
@@ -275,17 +284,29 @@ def consultas(request):
     categorias = Categoria.objects.all()
     try:
         token =  Token.objects.get(user=request.user)
-        if queryset:
-            historietas = (Comic.objects.get_by_titulo(queryset) |
-            Comic.objects.get_by_descripcion(queryset)).distinct()
-        else:
-            if querysetDate:
-                datos = Comic.objects.get(id=querysetDate)
-                date = datos.updated_at
-                historietas = Comic.objects.get_by_dateUpdated(date)
+        if request.user.is_staff:
+            if queryset:
+                historietas = (Comic.objects.get_by_titulo(queryset) |
+                Comic.objects.get_by_descripcion(queryset)).distinct()
             else:
-                if queryCateg:
-                    historietas = Comic.objects.filter(categoria_id=queryCateg)
+                if querysetDate:
+                    datos = Comic.objects.get(id=querysetDate)
+                    date = datos.updated_at
+                    historietas = Comic.objects.get_by_dateUpdated(date)
+                else:
+                    if queryCateg:
+                        historietas = Comic.objects.filter(categoria_id=queryCateg)
+            return render(request, 'paginas/consultas.html',
+        {
+            'historietas': historietas,
+            'usuarios': usuarios,
+            'categorias': categorias,
+            'opcion': opcion
+        })
+        else:
+            messages.error(request,{'SECCION DE CONSULTAS': 'NO TIENES PERMISO PARA ACCEDER'})
+            return redirect('inicio')
+
     except:
         # manejo de sesiones
         all_sessions = Session.objects.filter(expire_date__gte = datetime.now())
@@ -296,44 +317,4 @@ def consultas(request):
                     session.delete()
             messages.error(request,{'error': 'NO EXISTE EL TOKEN'})
         return redirect('login')
-    return render(request, 'paginas/consultas.html',
-    {
-        'historietas': historietas,
-        'usuarios': usuarios,
-        'categorias': categorias,
-        'opcion': opcion
-    })
 
-# @login_required
-# def perfil_view(request):
-#      # Guardamos la informacion del modelo
-#     Profile = Profile.objects.all()
-#     profle2 = Profile.insert({
-
-#     })
-#     try:
-#         token =  Token.objects.get(user=request.user)
-#     except:
-#         # manejo de sesiones
-#         all_sessions = Session.objects.filter(expire_date__gte = datetime.now())
-#         if all_sessions.exists():
-#             for session in all_sessions:
-#                 session_data = session.get_decoded()
-#                 if str(request.user.id) == session_data.get('_auth_user_id'):
-#                     session.delete()
-#             messages.error(request,{'error': 'NO EXISTE EL TOKEN'})
-#         return redirect('login')
-#     return render(request, 'paginas/profile_usuario.html', {'Profile': Profile})
-
-# try:
-#         token =  Token.objects.get(user=request.user)
-# except:
-#     # manejo de sesiones
-#     all_sessions = Session.objects.filter(expire_date__gte = datetime.now())
-#     if all_sessions.exists():
-#         for session in all_sessions:
-#             session_data = session.get_decoded()
-#             if str(request.user.id) == session_data.get('_auth_user_id'):
-#                 session.delete()
-#         messages.error(request,{'error': 'NO EXISTE EL TOKEN'})
-#     return redirect('login')

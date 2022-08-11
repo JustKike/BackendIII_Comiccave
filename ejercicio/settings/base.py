@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
+    "debug_toolbar",
     'comics',
     'Perfil'
 ]
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
 TOKEN_EXPIRED_AFTER_SECONDS = 60 #60 segundos, lo normal son 15min = (900s)
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -161,3 +163,9 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 django_heroku.settings(locals())
+
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]

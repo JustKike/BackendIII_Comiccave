@@ -21,9 +21,17 @@ from django.conf import settings
 from ejercicio.settings import base
 from .settings import production
 from django.contrib.staticfiles.urls import static
+from django.conf.urls import include, url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('comics.urls')),
     path('', include("Perfil.urls")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ]
